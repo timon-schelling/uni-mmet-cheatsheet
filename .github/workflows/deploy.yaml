@@ -1,0 +1,54 @@
+name: "Deploy"
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: web
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+
+      - uses: gacts/install-podman@v1
+      - uses: hustcer/setup-nu@main
+        with:
+          version: "*"
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build
+        shell: nu {0}
+        run: |
+          nu ./compile-all.nu
+
+          try { rm target/index.html }
+          ls target | sort-by name -n | get name
+              | each { path relative-to target }
+              | each { $"<a href=\"($in)\">($in | str replace -r '\.[^.]+$' '')<br>" }
+              | append ""
+              | prepend "<style> a { font-family: monospace; font-size: 2.2em; } </style>"
+              | str join "\n"
+              | save -f target/index.html
+
+      - name: Upload
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./target
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v2
