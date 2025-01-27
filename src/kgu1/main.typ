@@ -19,7 +19,7 @@ $x = r cos(phi) quad y = r sin(phi)$
 
 $z^(\*) = r e^(- j phi)$
 
-$z_1 dot.op z_2 = r_1 r_2 e^(j (phi_1 + phi_2))$
+$z_1 dot z_2 = r_1 r_2 e^(j (phi_1 + phi_2))$
 
 $z_1 / z_2 = r_1 / r_2 e^(j (phi_1 - phi_2))$
 
