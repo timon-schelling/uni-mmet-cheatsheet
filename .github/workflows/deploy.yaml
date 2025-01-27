@@ -35,6 +35,8 @@ jobs:
         run: |
           nu ./compile-all.nu
 
+          nu ./compile-all-svg.nu
+
           try { rm target/index.html }
           ls target | sort-by name -n | get name
               | each { path relative-to target }
